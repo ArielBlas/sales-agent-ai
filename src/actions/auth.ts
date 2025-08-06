@@ -18,7 +18,7 @@ export async function onAuthenticateUser() {
 
     if (userExists) {
       return {
-        status: 200,
+        status: 201,
         user: userExists,
       };
     }
