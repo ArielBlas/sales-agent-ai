@@ -1,4 +1,5 @@
 import { onAuthenticateUser } from "@/actions/auth";
+import Sidebar from "@/components/ReusableComponent/LayoutComponents/Sidebar";
 import { redirect } from "next/navigation";
 import React from "react";
 
@@ -13,7 +14,14 @@ const Layout = async ({ children }: Props) => {
     redirect("/sign-in");
   }
 
-  return <div className="flex w-full min-h-screen">{children}</div>;
+  return (
+    <div className="flex w-full min-h-screen">
+      <Sidebar />
+      <div className="flex flex-col w-full h-screen overflow-auto px-4 scrollbar-hide container mx-auto">
+        {children}
+      </div>
+    </div>
+  );
 };
 
 export default Layout;
