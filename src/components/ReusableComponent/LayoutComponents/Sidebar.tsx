@@ -8,10 +8,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import Link from "next/link";
+import { UserButton } from "@clerk/nextjs";
 
-type Props = {};
-
-const Sidebar = (props: Props) => {
+const Sidebar = () => {
   const pathname = usePathname();
 
   return (
@@ -42,6 +41,7 @@ const Sidebar = (props: Props) => {
             </TooltipProvider>
           ))}
         </div>
+        <UserButton />
       </div>
     </div>
   );
