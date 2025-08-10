@@ -1,8 +1,10 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { User } from "@prisma/client";
 import { ArrowLeft } from "lucide-react";
 import { useRoute } from "next/navigation";
 import { usePathname } from "next/navigation";
+import PurpleIcon from "../PurpleIcon";
 
 type Props = { user: User };
 
@@ -25,6 +27,10 @@ const Header = ({ user }: Props) => {
           {pathname.split("/")[1]}
         </div>
       )}
+
+      <div className="flex gap-6 items-center flex-wraps">
+        <PurpleIcon>+</PurpleIcon>
+      </div>
     </div>
   );
 };
