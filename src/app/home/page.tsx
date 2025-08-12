@@ -1,5 +1,7 @@
 import React from "react";
-import OnBoading from "./_components/Onboarding";
+import OnBoarding from "./_components/OnBoarding";
+import FeatureCard from "./_components/FeatureCard";
+import { Upload, Webcam } from "lucide-react";
 
 type Props = {};
 
@@ -12,6 +14,19 @@ const Pages = (props: Props) => {
             Get maximum Conversion from your webinars
           </h2>
           <OnBoarding />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 place-content-center">
+          <FeatureCard
+            Icon={<Upload className="w-10 h-10" />}
+            heading="Browse or drag a pre-recorded webinar file"
+            link="#"
+          />
+          <FeatureCard
+            Icon={<Webcam className="w-10 h-10" />}
+            heading="Browse or drag a pre-recorded webinar file"
+            link="/webinars"
+          />
         </div>
       </div>
     </div>
