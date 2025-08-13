@@ -2,6 +2,7 @@ import React from "react";
 import OnBoarding from "./_components/OnBoarding";
 import FeatureCard from "./_components/FeatureCard";
 import { Upload, Webcam } from "lucide-react";
+import FeatureSectionLayout from "./_components/FeatureSectionLayout";
 
 type Props = {};
 
@@ -28,6 +29,13 @@ const Pages = (props: Props) => {
             link="/webinars"
           />
         </div>
+      </div>
+
+      <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6 rounded-xl bg-background-10">
+        <FeatureSectionLayout
+          heading="See how far along are your potential customers"
+          link="/lead"
+        />
       </div>
     </div>
   );
