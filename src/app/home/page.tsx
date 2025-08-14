@@ -3,6 +3,8 @@ import OnBoarding from "./_components/OnBoarding";
 import FeatureCard from "./_components/FeatureCard";
 import { Upload, Webcam } from "lucide-react";
 import FeatureSectionLayout from "./_components/FeatureSectionLayout";
+import Image from "next/image";
+import { potentialCustomer } from "@/lib/data";
 
 type Props = {};
 
@@ -35,7 +37,32 @@ const Pages = (props: Props) => {
         <FeatureSectionLayout
           heading="See how far along are your potential customers"
           link="/lead"
-        />
+        >
+          <div className="p-5 flex flex-col gap-4 items-start border rounded-xl border-border backdrop-blur-3xl">
+            <div className="w-full flex justify-between items-center gap-3">
+              <p className="text-primary font-semibold text-sm">Conversions</p>
+              <p className="text-xs text-muted-foreground font-normal">50</p>
+            </div>
+            <div className="flex flex-col gap-4 items-start">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <Image
+                  key={index}
+                  src="/featurecard.png"
+                  alt="info-card"
+                  width={250}
+                  height={250}
+                  className="w-full h-full object-cover rounded-xl"
+                />
+              ))}
+            </div>
+          </div>
+        </FeatureSectionLayout>
+        <FeatureSectionLayout
+          heading="See the list of your current customers"
+          link="/pipeline"
+        >
+          <div className="flex gap-4 items-center h-full w-full justify-center relative flex-wrap"></div>
+        </FeatureSectionLayout>
       </div>
     </div>
   );
