@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { CtaTypeEnum } from "@prisma/client";
+import { ValidationErrors } from "@/lib/type";
 
 export type WebinarFormState = {
   basicInfo: {
@@ -23,11 +24,27 @@ export type WebinarFormState = {
   };
 };
 
+type ValidationType = {
+  basicInfo: {
+    valid: boolean;
+    errors: ValidationErrors;
+  };
+  cta: {
+    valid: boolean;
+    errors: ValidationErrors;
+  };
+  additionalInfo: {
+    valid: boolean;
+    errors: ValidationErrors;
+  };
+};
+
 type WebinarStore = {
   isModalOpen: boolean;
   isComplete: boolean;
   isSubmitting: boolean;
   formData: WebinarFormState;
+  validation: ValidationType;
 
   setModalOpen: (open: boolean) => void;
   setComplete: (complete: boolean) => void;
@@ -56,11 +73,27 @@ const initialState: WebinarFormState = {
   },
 };
 
+const initialValidation: ValidationType = {
+  basicInfo: {
+    valid: false,
+    errors: {},
+  },
+  cta: {
+    valid: false,
+    errors: {},
+  },
+  additionalInfo: {
+    valid: false,
+    errors: {},
+  },
+};
+
 export const useWebinarStore = create<WebinarStore>((set) => ({
   isModalOpen: false,
   isComplete: false,
   isSubmitting: false,
   formData: initialState,
+  validation: initialValidation,
 
   setModalOpen: (open: boolean) => set({ isModalOpen: open }),
   setComplete: (complete: boolean) => set({ isComplete: complete }),
