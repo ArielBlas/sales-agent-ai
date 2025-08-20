@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { CtaTypeEnum } from "@prisma/client";
-import { ValidationErrors } from "@/lib/type";
+import { validateBasicInfo, ValidationErrors } from "@/lib/type";
 
 export type WebinarFormState = {
   basicInfo: {
@@ -49,6 +49,29 @@ type WebinarStore = {
   setModalOpen: (open: boolean) => void;
   setComplete: (complete: boolean) => void;
   setSubmitting: (submitting: boolean) => void;
+
+  updateBasicInfoField: <K extends keyof WebinarFormState["basicInfo"]>(
+    field: K,
+    value: WebinarFormState["basicInfo"][K]
+  ) => void;
+
+  updateCTAField: <K extends keyof WebinarFormState["cta"]>(
+    field: K,
+    value: WebinarFormState["cta"][K]
+  ) => void;
+
+  updateAdditionalInfoField: <
+    K extends keyof WebinarFormState["additionalInfo"]
+  >(
+    field: K,
+    value: WebinarFormState["additionalInfo"][K]
+  ) => void;
+
+  validateStep: (stepId: keyof WebinarFormState) => boolean;
+
+  getStepValidationErrors: (stepId: keyof WebinarFormState) => ValidationErrors;
+
+  resetForm: () => void;
 };
 
 const initialState: WebinarFormState = {
@@ -98,4 +121,23 @@ export const useWebinarStore = create<WebinarStore>((set) => ({
   setModalOpen: (open: boolean) => set({ isModalOpen: open }),
   setComplete: (complete: boolean) => set({ isComplete: complete }),
   setSubmitting: (submitting: boolean) => set({ isSubmitting: submitting }),
+
+  updateBasicInfoField: (field, value) => {
+    set((state) => {
+      const newBasicInfo = { ...state.formData.basicInfo, [field]: value };
+
+      const validationResult = validateBasicInfo(newBasicInfo);
+
+      return {
+        formData: {
+          ...state.formData,
+          basicInfo: newBasicInfo,
+        },
+        validation: {
+          ...state.validation,
+          basicInfo: validationResult,
+        },
+      };
+    });
+  },
 }));
