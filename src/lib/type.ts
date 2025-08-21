@@ -40,3 +40,25 @@ export const validateBasicInfo = (data: {
     errors,
   };
 };
+
+export const validateCTA = (data: {
+  ctaLabel?: string;
+  tags?: string[];
+  ctaType?: string;
+  aiAgent?: string;
+}): ValidationResult => {
+  const errors: ValidationErrors = {};
+
+  if (!data.ctaLabel?.trim()) {
+    errors.ctaLabel = "CTA label is required.";
+  }
+
+  if (!data.ctaType) {
+    errors.ctaType = "Please select a CTA type.";
+  }
+
+  return {
+    valid: Object.keys(errors).length === 0,
+    errors,
+  };
+};

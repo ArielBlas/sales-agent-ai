@@ -140,4 +140,23 @@ export const useWebinarStore = create<WebinarStore>((set) => ({
       };
     });
   },
+
+  updateCTAField: (field, value) => {
+    set((state) => {
+      const newCTA = { ...state.formData.cta, [field]: value };
+
+      const validationResult = validateCTA(newCTA);
+
+      return {
+        formData: {
+          ...state.formData,
+          cta: newCTA,
+        },
+        validation: {
+          ...state.validation,
+          cta: validationResult,
+        },
+      };
+    });
+  },
 }));
