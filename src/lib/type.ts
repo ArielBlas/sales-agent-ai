@@ -62,3 +62,20 @@ export const validateCTA = (data: {
     errors,
   };
 };
+
+export const validateAdditionalInfo = (data: {
+  lockChat?: boolean;
+  couponCode?: string;
+  couponEnabled?: boolean;
+}): ValidationResult => {
+  const errors: ValidationErrors = {};
+
+  if (data.couponEnabled && !data.couponCode?.trim()) {
+    errors.couponCode = "Coupon code is required when enabled";
+  }
+
+  return {
+    valid: Object.keys(errors).length === 0,
+    errors,
+  };
+};

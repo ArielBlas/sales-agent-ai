@@ -1,6 +1,10 @@
 import { create } from "zustand";
 import { CtaTypeEnum } from "@prisma/client";
-import { validateBasicInfo, ValidationErrors } from "@/lib/type";
+import {
+  validateAdditionalInfo,
+  validateBasicInfo,
+  ValidationErrors,
+} from "@/lib/type";
 
 export type WebinarFormState = {
   basicInfo: {
@@ -155,6 +159,28 @@ export const useWebinarStore = create<WebinarStore>((set) => ({
         validation: {
           ...state.validation,
           cta: validationResult,
+        },
+      };
+    });
+  },
+
+  updateAdditionalInfoField: (field, value) => {
+    set((state) => {
+      const newAdditionalInfo = {
+        ...state.formData.additionalInfo,
+        [field]: value,
+      };
+
+      const validationResult = validateAdditionalInfo(newAdditionalInfo);
+
+      return {
+        formData: {
+          ...state.formData,
+          additionalInfo: newAdditionalInfo,
+        },
+        validation: {
+          ...state.validation,
+          additionalInfo: validationResult,
         },
       };
     });
