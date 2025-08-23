@@ -3,6 +3,7 @@ import { CtaTypeEnum } from "@prisma/client";
 import {
   validateAdditionalInfo,
   validateBasicInfo,
+  validateCTA,
   ValidationErrors,
 } from "@/lib/type";
 
@@ -115,7 +116,7 @@ const initialValidation: ValidationType = {
   },
 };
 
-export const useWebinarStore = create<WebinarStore>((set) => ({
+export const useWebinarStore = create<WebinarStore>((set, get) => ({
   isModalOpen: false,
   isComplete: false,
   isSubmitting: false,
@@ -184,5 +185,32 @@ export const useWebinarStore = create<WebinarStore>((set) => ({
         },
       };
     });
+  },
+
+  validateStep: (stepId: keyof WebinarFormState) => {
+    const { formData } = get();
+    let validationResult;
+
+    switch (stepId) {
+      case "basicInfo":
+        validationResult = validateBasicInfo(formData.basicInfo);
+        break;
+      case "cta":
+        validationResult = validateCTA(formData.cta);
+        break;
+      case "additionalInfo":
+        validationResult = validateAdditionalInfo(formData.additionalInfo);
+        break;
+      default:
+        break;
+    }
+
+    set((state) => {
+      return {
+        validation: { ...state.validation, [stepId]: validationResult },
+      };
+    });
+
+    return validationResult?.valid;
   },
 }));
