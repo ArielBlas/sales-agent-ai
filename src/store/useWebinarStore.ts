@@ -213,4 +213,17 @@ export const useWebinarStore = create<WebinarStore>((set, get) => ({
 
     return validationResult?.valid;
   },
+
+  getStepValidationErrors: (stepId: keyof WebinarFormState) => {
+    return get().validation[stepId]?.errors || {};
+  },
+
+  resetForm: () => {
+    set({
+      isComplete: false,
+      isSubmitting: false,
+      formData: initialState,
+      validation: initialValidation,
+    });
+  },
 }));
