@@ -25,7 +25,7 @@ function combineDateTime(
   return result;
 }
 
-export const onCreateWebinar = async (formData: WebinarFormState) => {
+export const createWebinar = async (formData: WebinarFormState) => {
   try {
     const user = await onAuthenticateUser();
     if (!user.user) {

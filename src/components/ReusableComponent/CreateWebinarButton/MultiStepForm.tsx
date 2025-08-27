@@ -5,6 +5,9 @@ import { AlertCircle, Check, ChevronRight, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { createWebinar } from "@/actions/webinar";
+import { toast } from "sonner";
+import { useRouter } from "next/router";
 
 type Step = {
   id: string;
@@ -21,6 +24,7 @@ type Props = {
 const MultiStepForm = ({ steps, onComplete }: Props) => {
   const { formData, validateStep, isSubmitting, setSubmitting, setModalOpen } =
     useWebinarStore();
+  const router = useRouter();
 
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<string[]>([]);
@@ -56,7 +60,23 @@ const MultiStepForm = ({ steps, onComplete }: Props) => {
       try {
         setSubmitting(true);
         const result = await createWebinar(formData);
-      } catch (error) {}
+        if (result.status === 200 && result.webinarId) {
+          toast.success("Your webinar has been created successfully.");
+          onComplete(result.webinarId);
+        } else {
+          toast.error(
+            result.message || "Your webinar has not been created successfully."
+          );
+          setValidationError(result.message);
+        }
+        router.refresh();
+      } catch (error) {
+        console.error("Error submitting form: ", error);
+        toast.success("Failed to create webinar. Please try again.");
+        setValidationError("Failed to create webinar. Please try again.");
+      } finally {
+        setSubmitting(false);
+      }
     } else {
       setCurrentStepIndex(currentStepIndex + 1);
     }
