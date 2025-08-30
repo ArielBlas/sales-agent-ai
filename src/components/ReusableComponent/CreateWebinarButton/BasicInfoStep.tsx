@@ -1,12 +1,21 @@
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Popover, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { useWebinarStore } from "@/store/useWebinarStore";
 import { PopoverContent } from "@radix-ui/react-popover";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Clock } from "lucide-react";
 import React from "react";
 import { toast } from "sonner";
 
@@ -39,15 +48,19 @@ const BasicInfoStep = (props: Props) => {
     }
   };
 
+  const handleTimeFormatChange = (value: string) => {
+    updateBasicInfoField("timeFormat", value as "AM" | "PM");
+  };
+
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <label
+        <Label
           htmlFor="webinarName"
           className={errors.webinarName ? "text-red-400" : ""}
         >
           Webinar name. <span className="text-red-400">*</span>
-        </label>
+        </Label>
         <input
           id="webinarName"
           name="webinarName"
@@ -64,12 +77,12 @@ const BasicInfoStep = (props: Props) => {
         )}
       </div>
       <div className="space-y-2">
-        <label
+        <Label
           htmlFor="description"
           className={errors.description ? "text-red-400" : ""}
         >
           Description. <span className="text-red-400">*</span>
-        </label>
+        </Label>
         <Textarea
           id="description"
           name="description"
@@ -120,6 +133,45 @@ const BasicInfoStep = (props: Props) => {
                 />
               </PopoverContent>
             </Popover>
+            {errors.date && (
+              <p className="text-sm text-red-400">{errors.date}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label className={errors.time ? "text-red-400" : ""}>
+              Webinar Time <span className="text-red-400">*</span>
+            </Label>
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Clock className="absolute left-3 top-2.5 h-4 w-4 text-foreground" />
+                <Input
+                  name="time"
+                  value={time || ""}
+                  onChange={handleChange}
+                  placeholder="12:00"
+                  className={cn(
+                    "pl-9 !bg-background/50 border border-input",
+                    errors.time && "border-red-400 focus-visible:ring-red-400"
+                  )}
+                />
+              </div>
+              <Select
+                value={timeFormat || "AM"}
+                onValueChange={handleTimeFormatChange}
+              >
+                <SelectTrigger className="w-20 !bg-background/50 border border-input">
+                  <SelectValue placeholder="AM" />
+                </SelectTrigger>
+                <SelectContent className="!bg-background/50 border border-input">
+                  <SelectItem value="AM">AM</SelectItem>
+                  <SelectItem value="PM">PM</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {errors.time && (
+              <p className="text-sm text-red-400">{errors.time}</p>
+            )}
           </div>
         </div>
       </div>
