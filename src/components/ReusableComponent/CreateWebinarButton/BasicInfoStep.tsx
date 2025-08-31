@@ -15,13 +15,11 @@ import { cn } from "@/lib/utils";
 import { useWebinarStore } from "@/store/useWebinarStore";
 import { PopoverContent } from "@radix-ui/react-popover";
 import { format } from "date-fns";
-import { CalendarIcon, Clock } from "lucide-react";
+import { CalendarIcon, Clock, Upload } from "lucide-react";
 import React from "react";
 import { toast } from "sonner";
 
-type Props = {};
-
-const BasicInfoStep = (props: Props) => {
+const BasicInfoStep = () => {
   const { formData, updateBasicInfoField, getStepValidationErrors } =
     useWebinarStore();
   const { webinarName, description, date, time, timeFormat } =
@@ -173,6 +171,23 @@ const BasicInfoStep = (props: Props) => {
               <p className="text-sm text-red-400">{errors.time}</p>
             )}
           </div>
+        </div>
+
+        <div className="flex items-center gap-2 text-sm text-gray-400 mt-4">
+          <div className="flex items-center">
+            <Upload className="h-4 w-4 mr-2" />
+            Uploading a video makes this webinar pre-recorded
+          </div>
+          <Button
+            variant="outline"
+            className="ml-auto relative border border-input hover:bg-background"
+          >
+            Upload File
+            <Input
+              className="absolute inset-0 opacity-0 cursor-pointer"
+              type="file"
+            />
+          </Button>
         </div>
       </div>
     </div>
