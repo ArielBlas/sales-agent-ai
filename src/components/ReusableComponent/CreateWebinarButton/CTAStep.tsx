@@ -2,7 +2,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { useWebinarStore } from "@/store/useWebinarStore";
-import React from "react";
+import { X } from "lucide-react";
+import React, { useState } from "react";
 
 type Props = {
   assistants: unknown[];
@@ -17,6 +18,7 @@ const CTAStep = (props: Props) => {
     removeTag,
     getStepValidationErrors,
   } = useWebinarStore();
+  const [tagInput, setTagInput] = useState("");
 
   const { ctaLabel, tags, aiAgent, priceId, ctaType } = formData.cta;
 
@@ -25,6 +27,14 @@ const CTAStep = (props: Props) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     updateCTAField(name as keyof typeof formData.cta, value);
+  };
+
+  const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && tagInput.trim()) {
+      e.preventDefault();
+      addTag(tagInput.trim());
+      setTagInput("");
+    }
   };
 
   return (
@@ -49,6 +59,37 @@ const CTAStep = (props: Props) => {
         />
         {errors.ctaLabel && (
           <p className="text-sm text-red-400">{errors.ctaLabel}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="tags">Tags</Label>
+        <Input
+          id="tags"
+          value={tagInput}
+          onChange={(e) => setTagInput(e.target.value)}
+          onKeyDown={handleAddTag}
+          placeholder="Add tags and press Enter"
+          className="!bg-background/50 border border-input"
+        />
+
+        {tags && tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-2">
+            {tags.map((tag: string, index: number) => (
+              <div
+                key={index}
+                className="flex items-center gap-1 bg-gray-800 text-white px-3 py-1 rouneded-md"
+              >
+                {tag}
+                <button
+                  onClick={() => removeTag(tag)}
+                  className="text-gray-400 hover:text-white"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </div>
