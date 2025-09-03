@@ -1,9 +1,11 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { useWebinarStore } from "@/store/useWebinarStore";
 import { X } from "lucide-react";
 import React, { useState } from "react";
+import { CtaTypeEnum } from "@prisma/client";
 
 type Props = {
   assistants: unknown[];
@@ -35,6 +37,10 @@ const CTAStep = (props: Props) => {
       addTag(tagInput.trim());
       setTagInput("");
     }
+  };
+
+  const handleSelectCTAType = (value: string) => {
+    updateCTAField("ctaType", value as CtaTypeEnum);
   };
 
   return (
@@ -91,6 +97,27 @@ const CTAStep = (props: Props) => {
             ))}
           </div>
         )}
+      </div>
+      <div className="space-y-2 w-full">
+        <Label>CTA Type</Label>
+        <Tabs defaultValue={CtaTypeEnum.BOOK_A_CALL} className="w-full">
+          <TabsList className="w-full bg-transparent">
+            <TabsTrigger
+              value={CtaTypeEnum.BOOK_A_CALL}
+              className="w-1/2 data-[state=active]:!bg-background/50"
+              onClick={() => handleSelectCTAType(CtaTypeEnum.BOOK_A_CALL)}
+            >
+              Book a Call
+            </TabsTrigger>
+            <TabsTrigger
+              value={CtaTypeEnum.BUY_NOW}
+              className="w-1/2"
+              onClick={() => handleSelectCTAType(CtaTypeEnum.BUY_NOW)}
+            >
+              Buy Now
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
       </div>
     </div>
   );
