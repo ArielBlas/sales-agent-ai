@@ -12,6 +12,7 @@ import React, { useState } from "react";
 import MultiStepForm from "./MultiStepForm";
 import BasicInfoStep from "./BasicInfoStep";
 import CTAStep from "./CTAStep";
+import AdditionalInfoStep from "./AdditionalInfoStep";
 
 type Props = {};
 
@@ -34,6 +35,13 @@ const CreateWebinarButton = (props: Props) => {
       description:
         "Please provide the end-point for your customer through your webinar",
       component: <CTAStep assistants={[]} stripeProducts={[]} />,
+    },
+    {
+      id: "additionalInfo",
+      title: "Additional Information",
+      description:
+        "Please fill out information about additional options if necessary",
+      component: <AdditionalInfoStep />,
     },
   ];
 
