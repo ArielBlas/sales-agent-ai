@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HandCoins, HomeIcon, Webcam } from "lucide-react";
 import { redirect } from "next/navigation";
 import React from "react";
+import WebinarCard from "./_components/WebinarCard";
 
 type Props = {};
 
