@@ -1,3 +1,5 @@
+import { Attendee } from "@prisma/client";
+
 export type ValidationErrors = Record<string, string>;
 
 export type ValidationResult = {
@@ -78,4 +80,9 @@ export const validateAdditionalInfo = (data: {
     valid: Object.keys(errors).length === 0,
     errors,
   };
+};
+
+export type AttendanceData = {
+  count: number;
+  users: Attendee[];
 };
