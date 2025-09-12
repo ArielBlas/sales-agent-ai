@@ -1,7 +1,10 @@
+import { AttendedTypeEnum } from "@prisma/client";
 import PageHeader from "@/components/ReusableComponent/PageHeader";
 import { HomeIcon, LeafIcon, PipetteIcon } from "lucide-react";
 import React from "react";
-import { getPipelineByWebinarId } from "@/actions/attendance";
+import { getWebinarAttendance } from "@/actions/attendance";
+import PipelineLayout from "./_components/PipelineLayout";
+import { formatColumnTitle } from "./_components/utils";
 
 type Props = {
   params: Promise<{ webinarId: string }>;
@@ -9,7 +12,15 @@ type Props = {
 
 const page = async ({ params }: Props) => {
   const { webinarId } = await params;
-  const pipelineData = await getPipelineByWebinarId(webinarId);
+  const pipelineData = await getWebinarAttendance(webinarId);
+
+  if (!pipelineData.data) {
+    return (
+      <div className="text-3xl h-[400px] flex justify-center items-center">
+        No Pipelines Found
+      </div>
+    );
+  }
 
   return (
     <div className="w-full flex flex-col gap-8">
