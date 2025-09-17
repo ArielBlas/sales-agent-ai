@@ -13,10 +13,13 @@ import MultiStepForm from "./MultiStepForm";
 import BasicInfoStep from "./BasicInfoStep";
 import CTAStep from "./CTAStep";
 import AdditionalInfoStep from "./AdditionalInfoStep";
+import Stripe from "stripe";
 
-type Props = {};
+type Props = {
+  stripeProducts: Stripe.Product[] | [];
+};
 
-const CreateWebinarButton = (props: Props) => {
+const CreateWebinarButton = ({ stripeProducts }: Props) => {
   const { isModalOpen, setModalOpen, isComplete, setComplete } =
     useWebinarStore();
 
@@ -34,7 +37,7 @@ const CreateWebinarButton = (props: Props) => {
       title: "CTA",
       description:
         "Please provide the end-point for your customer through your webinar",
-      component: <CTAStep assistants={[]} stripeProducts={[]} />,
+      component: <CTAStep assistants={[]} stripeProducts={stripeProducts} />,
     },
     {
       id: "additionalInfo",

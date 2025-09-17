@@ -6,10 +6,11 @@ import { useRoute } from "next/navigation";
 import { usePathname } from "next/navigation";
 import PurpleIcon from "../PurpleIcon";
 import CreateWebinarButton from "../CreateWebinarButton";
+import Stripe from "stripe";
 
-type Props = { user: User };
+type Props = { user: User; stripeProducts: Stripe.Product[] | [] };
 
-const Header = ({ user }: Props) => {
+const Header = ({ user, stripeProducts }: Props) => {
   const pathname = usePathname();
   const router = useRoute();
 
@@ -35,7 +36,7 @@ const Header = ({ user }: Props) => {
         </PurpleIcon>
       </div>
 
-      <CreateWebinarButton />
+      <CreateWebinarButton stripeProducts={stripeProducts} />
     </div>
   );
 };
