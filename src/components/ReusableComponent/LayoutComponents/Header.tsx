@@ -8,6 +8,7 @@ import PurpleIcon from "../PurpleIcon";
 import CreateWebinarButton from "../CreateWebinarButton";
 import Stripe from "stripe";
 import { StripeElements } from "../Stripe/Element";
+import SubscriptionModal from "../SusbscriptionModal";
 
 type Props = { user: User; stripeProducts: Stripe.Product[] | [] };
 
@@ -40,7 +41,9 @@ const Header = ({ user, stripeProducts }: Props) => {
       {user.subscription ? (
         <CreateWebinarButton stripeProducts={stripeProducts} />
       ) : (
-        <StripeElements></StripeElements>
+        <StripeElements>
+          <SubscriptionModal user={user} />
+        </StripeElements>
       )}
     </div>
   );
