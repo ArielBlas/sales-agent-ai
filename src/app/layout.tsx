@@ -4,6 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 
 import { Manrope } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -34,6 +35,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             {children}
+            <Toaster />
           </ThemeProvider>
         </body>
       </html>

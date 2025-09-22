@@ -83,3 +83,5 @@ export const potentialCustomer = [
     callStatus: CallStatusEnum.COMPLETED,
   },
 ];
+
+export const subscriptionPriceId = `price_1N4tY2K0b8Yk1JzXhXhXhXhX`;
