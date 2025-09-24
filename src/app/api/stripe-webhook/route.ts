@@ -1,3 +1,4 @@
+import { updateSubscription } from "@/actions/stripe";
 import { stripe } from "@/lib/stripe";
 import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
@@ -57,12 +58,17 @@ export async function POST(req: NextRequest) {
       case "checkout.session.completed":
       case "customer.subscription.created":
       case "customer.subscription.updated":
-        // await updateSubscription(event);
+        await updateSubscription(event);
         console.log("CREATED FROM WEBHOOK", event);
         return NextResponse.json({ received: true }, { status: 200 });
       default:
         console.log(`Unhandled event type ${stripeEvent.type}`);
         return NextResponse.json({ received: true }, { status: 200 });
     }
-  } catch (error) {}
+  } catch (error) {
+    console.error("Webhook processing error:", error);
+    return new NextResponse(`Webhook Error: ${error.message}`, {
+      status: error.statusCode || 400,
+    });
+  }
 }

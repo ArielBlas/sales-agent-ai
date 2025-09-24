@@ -95,3 +95,20 @@ export const onGetStripeClientSecret = async (
     };
   }
 };
+
+export const updateSubscription = async (subscription: Stripe.Subscription) => {
+  try {
+    const userId = subscription.metadata.userId;
+
+    await prismaClient.user.update({
+      where: { id: userId },
+      data: {
+        subscription: {
+          status: subscription.status === "active" ? true : false,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error updating subscription:", error);
+  }
+};
