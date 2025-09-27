@@ -1,6 +1,7 @@
 import { onAuthenticateUser } from "@/actions/auth";
 import { getWebinarById } from "@/actions/webinar";
 import React from "react";
+import RenderWebinar from "../_components/RenderWebinar";
 
 type Props = {
   params: Promise<{ liveWebinarId: string }>;
@@ -21,7 +22,24 @@ const page = async ({ params, searchParams }: Props) => {
     );
   }
 
-  return <div>page</div>;
+  const checkUser = await onAuthenticateUser();
+
+  const apiKey = "process.env.STREAM_API_KEY" as string;
+  const token = "process.env.STREAM_TOKEN" as string;
+  const callId = "process.env.STREAM_CALL_ID" as string;
+
+  return (
+    <div className="w-full min-h-screen mx-auto">
+      <RenderWebinar
+        apiKey={apiKey}
+        token={token}
+        callId={callId}
+        user={checkUser.user || null}
+        error={error}
+        webinarDate={webinarDate}
+      />
+    </div>
+  );
 };
 
 export default page;
