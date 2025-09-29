@@ -1,7 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import { Webinar, User } from "@prisma/client";
+import { Webinar, User, WebinarStatusEnum } from "@prisma/client";
 import CountdownTimer from "./CountdownTimer";
+import Image from "next/image";
+import WaitListComponent from "./WaitListComponent";
 
 type Props = {
   webinar: Webinar;
@@ -22,6 +24,22 @@ const WebinarUpcomingState = ({ webinar, currentUser }: Props) => {
           webinarId={webinar.id}
           webinarStatus={webinar.webinarStatus}
         />
+      </div>
+      <div className="space-y-6 w-full h-full flex justify-center items-center flex-col">
+        <div className="w-full max-w-md aspect-[4/3] relative rounded-4xl overflow-hidden mb-6">
+          <Image
+            src={"/darkthumbnail.png"}
+            alt={webinar.title}
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
+        {webinar?.webinarStatus === WebinarStatusEnum.SCHEDULED ? (
+          <WaitListComponent webinarId={webinar.id} webinarStatus="SCHEDULED" />
+        ) : (
+          ""
+        )}
       </div>
     </div>
   );
