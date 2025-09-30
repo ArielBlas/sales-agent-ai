@@ -9,6 +9,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { registerAttendance } from "@/actions/attendance";
 
 type Props = {
   webinarId: string;
@@ -21,6 +22,7 @@ const WaitListComponent = ({
   webinarStatus,
   onRegistered,
 }: Props) => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,6 +44,18 @@ const WaitListComponent = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    try {
+      const res = await registerAttendance({
+        email,
+        name,
+        webinarId,
+      });
+
+      if (!res.success) {
+        throw new Error(res.message || "Something went wrong!");
+      }
+    } catch (error) {}
   };
 
   return (
