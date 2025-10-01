@@ -10,6 +10,9 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { registerAttendance } from "@/actions/attendance";
+import { useAttendeeStore } from "@/store/useAttendeeStore";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type Props = {
   webinarId: string;
@@ -27,6 +30,9 @@ const WaitListComponent = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const router = useRouter();
+
+  const { setAttendee } = useAttendeeStore();
 
   const buttonText = () => {
     switch (webinarStatus) {
@@ -55,7 +61,43 @@ const WaitListComponent = ({
       if (!res.success) {
         throw new Error(res.message || "Something went wrong!");
       }
-    } catch (error) {}
+
+      if (res.data?.user) {
+        setAttendee({
+          id: res.data.user.id,
+          name: res.data.user.name,
+          email: res.data.user.email,
+          callStatus: "PENDING",
+        });
+      }
+
+      toast.success(
+        webinarStatus === WebinarStatusEnum.LIVE
+          ? "Successfully joined the webinar!"
+          : "Successfully registered for webinar"
+      );
+
+      setEmail("");
+      setName("");
+      setSubmitted(true);
+
+      setTimeout(() => {
+        setIsOpen(false);
+
+        if (webinarStatus === WebinarStatusEnum.LIVE) {
+          router.refresh();
+        }
+
+        if (onRegistered) onRegistered();
+      }, 1500);
+    } catch (error) {
+      console.error("Error submitting waitlist form: ", error);
+      toast.error(
+        error instanceof Error ? error.message : "Something went wrong!"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
