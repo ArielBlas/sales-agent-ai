@@ -13,6 +13,8 @@ import { registerAttendance } from "@/actions/attendance";
 import { useAttendeeStore } from "@/store/useAttendeeStore";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react";
 
 type Props = {
   webinarId: string;
@@ -126,10 +128,51 @@ const WaitListComponent = ({
               ? "Join the Webinar"
               : "Join the Waitlist"}
           </DialogTitle>
-          <form
-            onSubmit={handleSubmit}
-            className="flex flex-col gap-4 w-full"
-          ></form>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
+            {!submitted && (
+              <React.Fragment>
+                <Input
+                  type="text"
+                  placeholder="Your Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+                <Input
+                  type="email"
+                  placeholder="Your Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </React.Fragment>
+            )}
+
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isSubmitting || submitted}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="animate-spin mr-2" />{" "}
+                  {webinarStatus === WebinarStatusEnum.LIVE
+                    ? "Joining..."
+                    : "Registering..."}
+                </>
+              ) : submitted ? (
+                webinarStatus === WebinarStatusEnum.LIVE ? (
+                  "You're all set to join!"
+                ) : (
+                  "You've successfully joined the waitlist!"
+                )
+              ) : webinarStatus === WebinarStatusEnum.LIVE ? (
+                "Join Now"
+              ) : (
+                "Join Waitlist"
+              )}
+            </Button>
+          </form>
         </DialogHeader>
       </DialogContent>
     </Dialog>
