@@ -45,7 +45,7 @@ const RenderWebinar = ({
       ) : webinar.webinarStatus === WebinarStatusEnum.LIVE ? (
         <React.Fragment>
           {user?.id === webinar.presenterId ? (
-            // <LiveStreamState apiKey={apiKey} token={token} callId={callId} />
+            // <LiveStreamState apiKey={apiKey} token={token} callId={callId} webinar={webinar} user={user}/>
             "Livestream for presenter"
           ) : attendee ? (
             // <Participant apiKey={apiKey} token={token} callId={callId} />
