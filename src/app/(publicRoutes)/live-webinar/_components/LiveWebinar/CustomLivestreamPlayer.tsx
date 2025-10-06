@@ -5,6 +5,7 @@ import {
 } from "@stream-io/video-react-sdk";
 import { WebinarWithPresenter } from "@/lib/type";
 import React, { useEffect, useState } from "react";
+import LiveWebinarView from "../Common/LiveWebinarView";
 
 type Props = {
   callId: string;
