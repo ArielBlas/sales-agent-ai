@@ -2,7 +2,9 @@ import { WebinarWithPresenter } from "@/lib/type";
 import { MessageSquare, Users } from "lucide-react";
 import { StreamChat } from "stream-chat";
 import { ParticipantView, useCallStateHooks } from "@stream-io/video-react-sdk";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { CtaTypeEnum } from "@prisma/client";
 
 type Props = {
   showChat: boolean;
@@ -30,6 +32,58 @@ const LiveWebinarView = ({
   const [channel, setChannel] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const hostParticipant = participants.length > 0 ? participants[0] : null;
+
+  const handleCTAButtonClick = async () => {
+    if (!channel) return;
+    console.log("CTA Button Clicked", channel);
+    await channel.sendEvent({
+      type: "open_cta_dialog",
+    });
+  };
+
+  useEffect(() => {
+    const initChat = async () => {
+      const client = StreamChat.getInstance(
+        process.env.NEXT_PUBLIC_STREAM_API_KEY!
+      );
+      await client.connectUser(
+        {
+          id: userId,
+          name: username,
+        },
+        userToken
+      );
+
+      const channel = client.channel("livestream", webinar.id, {
+        name: webinar.title,
+      });
+
+      await channel.watch();
+
+      setChatClient(client);
+      setChannel(channel);
+    };
+
+    initChat();
+
+    return () => {
+      if (chatClient) {
+        chatClient.disconnectUser();
+      }
+    };
+  }, [userId, username, userToken, webinar.id, webinar.title]);
+
+  useEffect(() => {
+    if (chatClient && channel) {
+      channel.on((event: any) => {
+        if (event.type == "open_cta_dialog" && !isHost) {
+          setDialogOpen(true);
+        }
+      });
+    }
+  }, [chatClient, channel, isHost]);
+
+  if (!chatClient || !channel) return null;
 
   return (
     <div className="flex flex-col w-full h-screen max-h-screen overflow-hidden bg-background text-foreground">
@@ -95,6 +149,16 @@ const LiveWebinarView = ({
                 {webinar?.title}
               </div>
             </div>
+
+            {isHost && (
+              <div className="flex items-center space-x-1">
+                <Button onClick={handleCTAButtonClick}>
+                  {webinar?.ctaText === CtaTypeEnum.BOOK_A_CALL
+                    ? "Book a Call"
+                    : "Buy Now"}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
