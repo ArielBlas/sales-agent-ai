@@ -8,6 +8,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CtaTypeEnum } from "@prisma/client";
 import { Chat, Channel, MessageInput, MessageList } from "stream-chat-react";
+import CTADialogBox from "./CTADialogBox";
 
 type Props = {
   showChat: boolean;
@@ -186,6 +187,15 @@ const LiveWebinarView = ({
           </Chat>
         )}
       </div>
+
+      {dialogOpen && (
+        <CTADialogBox
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          webinar={webinar}
+          userId={userId}
+        />
+      )}
     </div>
   );
 };
