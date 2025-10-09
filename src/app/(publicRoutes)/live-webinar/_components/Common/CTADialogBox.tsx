@@ -12,6 +12,7 @@ import { DialogContent, DialogTitle } from "@radix-ui/react-dialog";
 import { ChevronRight, Loader2, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { createCheckoutLink } from "@/actions/stripe";
 
 type Props = {
   open?: boolean;
@@ -40,9 +41,24 @@ const CTADialogBox = ({
           return toast.error("No priceId or stripeConnectId found");
         }
 
-        router.push(`/live-webinar/${webinar?.id}/checkout`);
+        const session = await createCheckoutLink(
+          webinar.priceId,
+          webinar.presenter.stripeConnectId,
+          userId,
+          webinar.id,
+          true
+        );
+
+        if (!session.sessionUrl) {
+          throw new Error("Session ID not found in response");
+        }
+
+        window.open(session.sessionUrl, "_blank");
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error creating checkout link:", error);
+      toast.error("Error creating checkout link");
+    }
   };
 
   return (
