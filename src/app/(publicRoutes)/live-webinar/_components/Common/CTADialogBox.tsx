@@ -58,6 +58,8 @@ const CTADialogBox = ({
     } catch (error) {
       console.error("Error creating checkout link:", error);
       toast.error("Error creating checkout link");
+    } finally {
+      setLoading(false);
     }
   };
 

@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import WebinarUpcomingState from "./WebinarUpcoming/WebinarUpcomingState";
 import LiveStreamState from "./LiveWebinar/LiveStreamState";
 import { WebinarWithPresenter } from "@/lib/type";
+import Participant from "./Participant/Participant";
 
 type Props = {
   error: string | undefined;
@@ -55,8 +56,7 @@ const RenderWebinar = ({
               user={user}
             />
           ) : attendee ? (
-            // <Participant apiKey={apiKey} token={token} callId={callId} />
-            "Livestream for participant"
+            <Participant apiKey={apiKey} webinar={webinar} callId={callId} />
           ) : (
             <WebinarUpcomingState
               webinar={webinar}
