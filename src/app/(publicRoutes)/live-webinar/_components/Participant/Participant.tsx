@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { WebinarWithPresenter } from "@/lib/type";
 import { useAttendeeStore } from "@/store/useAttendeeStore";
 import { Call, StreamVideoClient, type User } from "@stream-io/video-react-sdk";
+import { getStreamIoToken } from "@/actions/streamIo";
 
 type Props = {
   apiKey: string;
@@ -36,6 +37,9 @@ const Participant = ({ apiKey, callId, webinar }: Props) => {
             attendee?.name || "Guest"
           }`,
         };
+
+        const userToken = await getStreamIoToken(attendee);
+        setToken(userToken);
       } catch (error) {}
     };
     initClient();
