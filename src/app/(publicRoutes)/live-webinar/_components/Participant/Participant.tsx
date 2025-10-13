@@ -40,9 +40,57 @@ const Participant = ({ apiKey, callId, webinar }: Props) => {
 
         const userToken = await getStreamIoToken(attendee);
         setToken(userToken);
-      } catch (error) {}
+
+        const streamClient = new StreamVideoClient({
+          apiKey,
+          user,
+          token: userToken,
+        });
+        streamClient.on("connection.changed", (event) => {
+          if (event.online) {
+            setConnectionStatus("connected");
+          } else {
+            setConnectionStatus("reconnecting");
+          }
+        });
+
+        await streamClient.connectUser(user, userToken);
+        const streamCall = streamClient.call("livestream", callId);
+        clientInitialized.current = true;
+
+        setClient(streamClient);
+        setCall(streamCall);
+        setConnectionStatus("connected");
+        await streamCall.join({ create: true });
+      } catch (error) {
+        console.error("Error initializing Stream Video client:", error);
+        setConnectionStatus("failed");
+        setErrorMessage(
+          error instanceof Error
+            ? error.message
+            : "Failed to connect to webinar"
+        );
+      }
     };
     initClient();
+
+    return () => {
+      const currentCall = call;
+      const currentClient = client;
+
+      if (currentCall && currentClient) {
+        currentCall
+          .leave()
+          .then(() => {
+            console.log("Left the call");
+            currentClient.disconnectUser();
+            clientInitialized.current = false;
+          })
+          .catch((error) => {
+            console.error("Error leaving the call: ", error);
+          });
+      }
+    };
   }, [apiKey, callId, attendee, call, client]);
 
   return <div>Participant</div>;
