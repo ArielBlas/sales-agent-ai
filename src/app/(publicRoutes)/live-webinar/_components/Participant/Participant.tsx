@@ -2,10 +2,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import { WebinarWithPresenter } from "@/lib/type";
 import { useAttendeeStore } from "@/store/useAttendeeStore";
-import { Call, StreamVideoClient, type User } from "@stream-io/video-react-sdk";
+import {
+  Call,
+  StreamCall,
+  StreamVideoClient,
+  StreamVideo,
+  type User,
+} from "@stream-io/video-react-sdk";
 import { getStreamIoToken } from "@/actions/streamIo";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, Loader2, WifiOff } from "lucide-react";
+import LiveWebinarView from "../Common/LiveWebinarView";
 
 type Props = {
   apiKey: string;
@@ -191,7 +198,20 @@ const Participant = ({ apiKey, callId, webinar }: Props) => {
     );
   }
 
-  return <div>Participant</div>;
+  return (
+    <StreamVideo client={client}>
+      <StreamCall call={call}>
+        <LiveWebinarView
+          showChat={showChat}
+          setShowChat={setShowChat}
+          webinar={webinar}
+          isHost={false}
+          username={attendee?.name}
+          userId={attendee?.id}
+          userToken={token}
+        />
+      </StreamCall>
+    </StreamVideo>
+  );
 };
-
 export default Participant;
