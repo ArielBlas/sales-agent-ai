@@ -19,6 +19,7 @@ export const getWebinarAttendance = async (
         id: true,
         ctaType: true,
         tags: true,
+        presenter: true,
         _count: {
           select: {
             attendance: true,
@@ -113,6 +114,8 @@ export const getWebinarAttendance = async (
             attendedAt: attendance.joinedAt,
             stripeConnectId: null,
             callStatus: attendance.user.callStatus,
+            createdAt: attendance.user.createdAt,
+            updatedAt: attendance.user.updatedAt,
           }));
         }
       }
@@ -123,6 +126,7 @@ export const getWebinarAttendance = async (
       data: result,
       ctaType: webinar.ctaType,
       webinarTags: webinar.tags || [],
+      presenter: webinar.presenter,
     };
   } catch (error) {
     console.error("Error fetching webinar attendance: ", error);
