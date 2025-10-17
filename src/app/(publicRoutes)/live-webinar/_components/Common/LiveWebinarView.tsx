@@ -1,6 +1,6 @@
 "use client";
 import { WebinarWithPresenter } from "@/lib/type";
-import { MessageSquare, Users } from "lucide-react";
+import { Loader2, MessageSquare, Users } from "lucide-react";
 import "stream-chat-react/dist/css/v2/index.css";
 import { StreamChat } from "stream-chat";
 import { ParticipantView, useCallStateHooks } from "@stream-io/video-react-sdk";
@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/button";
 import { CtaTypeEnum } from "@prisma/client";
 import { Chat, Channel, MessageInput, MessageList } from "stream-chat-react";
 import CTADialogBox from "./CTADialogBox";
+import { useRouter } from "next/navigation";
+import { changeWebinarStatus } from "@/actions/webinar";
+import { toast } from "sonner";
 
 type Props = {
   showChat: boolean;
@@ -36,6 +39,25 @@ const LiveWebinarView = ({
   const [channel, setChannel] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const hostParticipant = participants.length > 0 ? participants[0] : null;
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleEndStream = async () => {
+    setLoading(true);
+    try {
+      const res = await changeWebinarStatus(webinar.id, "ENDED");
+      if (!res.success) {
+        throw new Error(res.message);
+      }
+      router.refresh();
+      toast.success("Webinar ended successfully");
+    } catch (error) {
+      console.error("Error ending stream:", error);
+      toast.error("Error ending stream");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCTAButtonClick = async () => {
     if (!channel) return;
@@ -156,6 +178,16 @@ const LiveWebinarView = ({
 
             {isHost && (
               <div className="flex items-center space-x-1">
+                <Button onClick={handleEndStream} disabled={loading}>
+                  {loading ? (
+                    <>
+                      <Loader2 className="animate-spin mr-2" />
+                      Loading...
+                    </>
+                  ) : (
+                    "End Stream"
+                  )}
+                </Button>
                 <Button onClick={handleCTAButtonClick}>
                   {webinar?.ctaText === CtaTypeEnum.BOOK_A_CALL
                     ? "Book a Call"
