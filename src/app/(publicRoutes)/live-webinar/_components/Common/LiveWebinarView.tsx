@@ -3,7 +3,11 @@ import { WebinarWithPresenter } from "@/lib/type";
 import { Loader2, MessageSquare, Users } from "lucide-react";
 import "stream-chat-react/dist/css/v2/index.css";
 import { StreamChat } from "stream-chat";
-import { ParticipantView, useCallStateHooks } from "@stream-io/video-react-sdk";
+import {
+  ParticipantView,
+  useCallStateHooks,
+  type Call,
+} from "@stream-io/video-react-sdk";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CtaTypeEnum } from "@prisma/client";
@@ -20,6 +24,7 @@ type Props = {
   isHost: boolean;
   username: string;
   userId: string;
+  call: Call;
   userToken: string;
 };
 
@@ -31,6 +36,7 @@ const LiveWebinarView = ({
   username,
   userId,
   userToken,
+  call,
 }: Props) => {
   const { useParticipantCount, useParticipants } = useCallStateHooks();
   const participants = useParticipants();
@@ -41,15 +47,20 @@ const LiveWebinarView = ({
   const hostParticipant = participants.length > 0 ? participants[0] : null;
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [obsDialogOpen, setObsDialogOpen] = useState(false);
 
   const handleEndStream = async () => {
     setLoading(true);
     try {
+      call.stopLive({
+        continue_recording: false,
+      });
+      call.endCall();
       const res = await changeWebinarStatus(webinar.id, "ENDED");
       if (!res.success) {
         throw new Error(res.message);
       }
-      router.refresh();
+      router.push("/");
       toast.success("Webinar ended successfully");
     } catch (error) {
       console.error("Error ending stream:", error);
@@ -108,6 +119,17 @@ const LiveWebinarView = ({
       });
     }
   }, [chatClient, channel, isHost]);
+
+  useEffect(() => {
+    call.on("call.rtmp_broadcast_started", () => {
+      toast.success("Webinar started successfully");
+      router.refresh();
+    });
+
+    call.on("call.rtmp_broadcast_failed", () => {
+      toast.error("Stream failed to start. Please try again.");
+    });
+  }, [call]);
 
   if (!chatClient || !channel) return null;
 
@@ -178,6 +200,13 @@ const LiveWebinarView = ({
 
             {isHost && (
               <div className="flex items-center space-x-1">
+                <Button
+                  onClick={() => setObsDialogOpen(true)}
+                  variant="outline"
+                  className="mr-2"
+                >
+                  Get OBS Creds
+                </Button>
                 <Button onClick={handleEndStream} disabled={loading}>
                   {loading ? (
                     <>
@@ -202,7 +231,7 @@ const LiveWebinarView = ({
           <Chat client={chatClient}>
             <Channel channel={channel}>
               <div className="w-72 bg-card border-border rounded-lg overflow-hidden flex flex-col">
-                <div className="py-2 px-3 border-b border-border font-medium flex items-center justify-between">
+                <div className="py-2 text-primary px-3 border-b border-border font-medium flex items-center justify-between">
                   <span>Chat</span>
                   <span className="text-sm bg-muted px-2 py-0.5 rounded-full">
                     {viewerCount} viewers
@@ -226,6 +255,14 @@ const LiveWebinarView = ({
           onOpenChange={setDialogOpen}
           webinar={webinar}
           userId={userId}
+        />
+      )}
+      {obsDialogOpen && (
+        <ObsDialogBox
+          open={obsDialogOpen}
+          onOpenChange={setObsDialogOpen}
+          rtmpURL={`rtmps://ingress.stream-io-video.com:433/${process.env.NEXT_PUBLIC_STREAM_API_KEY}.livestream.${webinar.id}`}
+          streamKey={userToken}
         />
       )}
     </div>
