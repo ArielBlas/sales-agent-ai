@@ -16,6 +16,7 @@ import CTADialogBox from "./CTADialogBox";
 import { useRouter } from "next/navigation";
 import { changeWebinarStatus } from "@/actions/webinar";
 import { toast } from "sonner";
+import ObsDialogBox from "./ObsDialogBox";
 
 type Props = {
   showChat: boolean;
