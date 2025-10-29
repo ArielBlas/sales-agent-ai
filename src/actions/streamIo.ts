@@ -27,3 +27,31 @@ export const getStreamIoToken = async (attendee: Attendee) => {
     throw new Error("Failed to generate Stream IO token");
   }
 };
+
+export const getTokenForHost = async (
+  userId: string,
+  username: string,
+  profilePic: string
+) => {
+  try {
+    const newUser: UserRequest = {
+      id: userId,
+      role: "user",
+      name: username || "Guest",
+      image:
+        profilePic ||
+        `https://api.dicebear.com/7.x/initials/svg?seed=${username}`,
+    };
+    await getStreamClient.upsertUsers([newUser]);
+
+    const validity = 60 * 60 * 60;
+    const token = getStreamClient.generateUserToken({
+      user_id: userId,
+      validity_in_seconds: validity,
+    });
+    return token;
+  } catch (error) {
+    console.error("Error generating Stream IO token for host:", error);
+    throw new Error("Failed to generate Stream IO token for host");
+  }
+};
