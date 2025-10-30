@@ -1,14 +1,16 @@
 "use server";
 
-import { Attendee } from "@prisma/client";
+import { Attendee, Webinar } from "@prisma/client";
 import { getStreamClient } from "@/lib/stream/streamClient";
-import { UserRequest } from "@stream-io/video-react-sdk";
+import { UserRequest } from "@stream-io/node-sdk";
+import { prismaClient } from "@/lib/prisma";
 
 export const getStreamIoToken = async (attendee: Attendee) => {
   try {
     const newUser: UserRequest = {
       id: attendee?.id || "guest",
-      name: attendee?.name || "guest",
+      role: "user",
+      name: attendee?.name || "Guest",
       image: `https://api.dicebear.com/7.x/initials/svg?seed=${
         attendee?.name || "Guest"
       }`,
@@ -53,5 +55,38 @@ export const getTokenForHost = async (
   } catch (error) {
     console.error("Error generating Stream IO token for host:", error);
     throw new Error("Failed to generate Stream IO token for host");
+  }
+};
+
+export const createAndStartStream = async (webinar: Webinar) => {
+  try {
+    const checkWebinar = await prismaClient.webinar.findMany({
+      webinar: {
+        presenterId: webinar.presenterId,
+        webinarStatus: "LIVE",
+      },
+    });
+
+    if (checkWebinar.length > 0) {
+      throw new Error("You already have a live webinar running.");
+    }
+
+    const call = getStreamClient.video.call("livestream", webinar.id);
+    await call.getOrCreate({
+      data: {
+        created_by_id: webinar.presenterId,
+        members: [
+          {
+            user_id: webinar.presenterId,
+            role: "host",
+          },
+        ],
+      },
+    });
+
+    console.log("Stream call created and started successfully");
+  } catch (error) {
+    console.error("Error creating and starting Stream call:", error);
+    throw new Error("Failed to create and start Stream call");
   }
 };
