@@ -7,6 +7,7 @@ import { User } from "@prisma/client";
 import { WebinarWithPresenter } from "@/lib/type";
 import React, { useEffect, useState } from "react";
 import CustomLivestreamPlayer from "./CustomLivestreamPlayer";
+import { getTokenForHost } from "@/actions/streamIo";
 
 type Props = {
   apiKey: string;
@@ -15,20 +16,41 @@ type Props = {
   user: User;
 };
 
-const hostUser: StreamUser = { id: process.env.NEXT_PUBLIC_STREAM_USER_ID! };
-
 const LiveStreamState = ({ apiKey, callId, webinar, user }: Props) => {
   const [hostToken, setHostToken] = useState<string | null>(null);
-  const client = new StreamVideoClient({ apiKey, user: hostUser });
+  const [client, setClient] = useState<StreamVideoClient | null>(null);
 
   useEffect(() => {
     const init = async () => {
       try {
-        const token = await getTokenForHost();
-      } catch (error) {}
+        const token = await getTokenForHost(
+          webinar.presenterId,
+          webinar.presenter.name,
+          webinar.presenter.profileImage
+        );
+
+        const hostUser: StreamUser = {
+          id: webinar.presenterId,
+          name: webinar.presenter.name,
+          image: webinar.presenter.profileImage,
+        };
+
+        const streamClient = new StreamVideoClient({
+          apiKey,
+          user: hostUser,
+          token,
+        });
+
+        setHostToken(token);
+        setClient(streamClient);
+      } catch (error) {
+        console.error("Error initializing Stream Video client:", error);
+      }
     };
     init();
   }, [apiKey, webinar]);
+
+  if (!client || !hostToken) return;
 
   return (
     <StreamVideo client={client}>
@@ -37,7 +59,7 @@ const LiveStreamState = ({ apiKey, callId, webinar, user }: Props) => {
         callType="livestream"
         webinar={webinar}
         username={user.name}
-        token={token}
+        token={hostToken}
       />
     </StreamVideo>
   );
