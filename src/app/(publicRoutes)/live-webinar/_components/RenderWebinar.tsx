@@ -15,18 +15,10 @@ type Props = {
   user: User | null;
   webinar: WebinarWithPresenter;
   apiKey: string;
-  token: string;
-  callId: string;
+  recording: StreamCallRecording | null;
 };
 
-const RenderWebinar = ({
-  error,
-  user,
-  webinar,
-  apiKey,
-  token,
-  callId,
-}: Props) => {
+const RenderWebinar = ({ error, user, webinar, apiKey, recording }: Props) => {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -41,26 +33,25 @@ const RenderWebinar = ({
 
   return (
     <React.Fragment>
-      {webinar.webinarStatus === WebinarStatusEnum.SCHEDULED ? (
-        <WebinarUpcomingState webinar={webinar} currentUser={User || null} />
-      ) : webinar.webinarStatus === WebinarStatusEnum.WAITING_ROOM ? (
-        <WebinarUpcomingState webinar={webinar} currentUser={User || null} />
-      ) : webinar.webinarStatus === WebinarStatusEnum.LIVE ? (
+      {webinar.webinarStatus === WebinarStatusEnum.LIVE ? (
         <React.Fragment>
           {user?.id === webinar.presenterId ? (
             <LiveStreamState
               apiKey={apiKey}
-              token={token}
-              callId={callId}
               webinar={webinar}
+              callId={webinar.id}
               user={user}
             />
           ) : attendee ? (
-            <Participant apiKey={apiKey} webinar={webinar} callId={callId} />
+            <Participant
+              apiKey={apiKey}
+              webinar={webinar}
+              callId={webinar.id}
+            />
           ) : (
             <WebinarUpcomingState
               webinar={webinar}
-              currentUser={User || null}
+              currentUser={user || null}
             />
           )}
         </React.Fragment>
@@ -75,8 +66,23 @@ const RenderWebinar = ({
             </p>
           </div>
         </div>
+      ) : webinar.webinarStatus === WebinarStatusEnum.END ? (
+        recording?.url ? (
+          "This is the video"
+        ) : (
+          <div className="flex justify-center items-center h-full w-full">
+            <div className="text-center space-y-4">
+              <h3 className="text-2xl font-semibold text-primary">
+                {webinar?.title}
+              </h3>
+              <p className="text-muted-foreground text-xs">
+                This webinar has ended. No recording is available.
+              </p>
+            </div>
+          </div>
+        )
       ) : (
-        <WebinarUpcomingState webinar={webinar} currentUser={User || null} />
+        <WebinarUpcomingState webinar={webinar} currentUser={user || null} />
       )}
     </React.Fragment>
   );
