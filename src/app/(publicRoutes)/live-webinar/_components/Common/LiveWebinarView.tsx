@@ -61,8 +61,8 @@ const LiveWebinarView = ({
       if (!res.success) {
         throw new Error(res.message);
       }
-      router.push("/");
       toast.success("Webinar ended successfully");
+      router.refresh();
     } catch (error) {
       console.error("Error ending stream:", error);
       toast.error("Error ending stream");
@@ -117,20 +117,12 @@ const LiveWebinarView = ({
         if (event.type == "open_cta_dialog" && !isHost) {
           setDialogOpen(true);
         }
+        if (event.type === "start_live") {
+          window.location.reload();
+        }
       });
     }
   }, [chatClient, channel, isHost]);
-
-  useEffect(() => {
-    call.on("call.rtmp_broadcast_started", () => {
-      toast.success("Webinar started successfully");
-      router.refresh();
-    });
-
-    call.on("call.rtmp_broadcast_failed", () => {
-      toast.error("Stream failed to start. Please try again.");
-    });
-  }, [call]);
 
   if (!chatClient || !channel) return null;
 
@@ -207,6 +199,17 @@ const LiveWebinarView = ({
                   className="mr-2"
                 >
                   Get OBS Creds
+                </Button>
+                <Button
+                  onClick={async () => {
+                    await channel.sendEvent({
+                      type: "start_live",
+                    });
+                  }}
+                  variant="outline"
+                  className="mr-2"
+                >
+                  Go Live
                 </Button>
                 <Button onClick={handleEndStream} disabled={loading}>
                   {loading ? (
