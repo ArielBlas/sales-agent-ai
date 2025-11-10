@@ -1,5 +1,6 @@
 import { onAuthenticateUser } from "@/actions/auth";
 import { getAllProductsFromStripe } from "@/actions/stripe";
+import { getAllAssistants } from "@/actions/vapi";
 import Header from "@/components/ReusableComponent/LayoutComponents/Header";
 import Sidebar from "@/components/ReusableComponent/LayoutComponents/Sidebar";
 import { redirect } from "next/navigation";
@@ -17,6 +18,7 @@ const Layout = async ({ children }: Props) => {
   }
 
   const stripeProducts = await getAllProductsFromStripe();
+  const assistants = await getAllAssistants();
 
   return (
     <div className="flex w-full min-h-screen">
@@ -25,6 +27,7 @@ const Layout = async ({ children }: Props) => {
         <Header
           user={userExist.user}
           stripeProducts={stripeProducts.products || []}
+          assistants={assistants.data || []}
         />
 
         <div className="flex-1 py-10">{children}</div>

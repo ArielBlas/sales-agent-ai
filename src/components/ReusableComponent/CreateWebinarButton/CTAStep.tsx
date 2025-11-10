@@ -14,13 +14,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Stripe from "stripe";
+import { Assistant } from "@vapi-ai/server-sdk/api";
 
 type Props = {
-  assistants: unknown[];
   stripeProducts: Stripe.Product[] | [];
+  assistants: Assistant[] | [];
 };
 
-const CTAStep = ({ assistants, stripeProducts }: Props) => {
+const CTAStep = ({ stripeProducts, assistants }: Props) => {
   const {
     formData,
     updateCTAField,

@@ -15,12 +15,14 @@ import CTAStep from "./CTAStep";
 import AdditionalInfoStep from "./AdditionalInfoStep";
 import Stripe from "stripe";
 import SuccessStep from "./SuccessStep";
+import { Assistant } from "@vapi-ai/server-sdk/api";
 
 type Props = {
   stripeProducts: Stripe.Product[] | [];
+  assistants: Assistant[] | [];
 };
 
-const CreateWebinarButton = ({ stripeProducts }: Props) => {
+const CreateWebinarButton = ({ stripeProducts, assistants }: Props) => {
   const { isModalOpen, setModalOpen, isComplete, setComplete, resetForm } =
     useWebinarStore();
 

@@ -9,10 +9,15 @@ import CreateWebinarButton from "../CreateWebinarButton";
 import Stripe from "stripe";
 import { StripeElements } from "../Stripe/Element";
 import SubscriptionModal from "../SusbscriptionModal";
+import { Assistant } from "@vapi-ai/server-sdk/api";
 
-type Props = { user: User; stripeProducts: Stripe.Product[] | [] };
+type Props = {
+  user: User;
+  stripeProducts: Stripe.Product[] | [];
+  assistants: Assistant[] || [];
+};
 
-const Header = ({ user, stripeProducts }: Props) => {
+const Header = ({ user, stripeProducts, assistants }: Props) => {
   const pathname = usePathname();
   const router = useRoute();
 
@@ -39,7 +44,7 @@ const Header = ({ user, stripeProducts }: Props) => {
       </div>
 
       {user.subscription ? (
-        <CreateWebinarButton stripeProducts={stripeProducts} />
+        <CreateWebinarButton stripeProducts={stripeProducts} assistants={assistants} />
       ) : (
         <StripeElements>
           <SubscriptionModal user={user} />
