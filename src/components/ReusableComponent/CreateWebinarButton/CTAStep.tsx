@@ -56,6 +56,10 @@ const CTAStep = ({ stripeProducts, assistants }: Props) => {
     updateCTAField("priceId", value);
   };
 
+  const handleSelectAgent = (value: string) => {
+    updateCTAField("aiAgent", value);
+  };
+
   return (
     <div className="space-y-6">
       <div className="space-y-2">
@@ -132,6 +136,46 @@ const CTAStep = ({ stripeProducts, assistants }: Props) => {
           </TabsList>
         </Tabs>
       </div>
+
+      {ctaType === CtaTypeEnum.BOOK_A_CALL && (
+        <div className="space-y-2">
+          <Label>Attach an AI Agent</Label>
+          <div className="relative">
+            <div className="mb-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-500" />
+                <Input
+                  placeholder="Search agents"
+                  className="pl-9 !bg-background/50 border border-input"
+                />
+              </div>
+            </div>
+            <Select value={aiAgent} onValueChange={handleSelectAgent}>
+              <SelectTrigger className="w-full !bg-background/50 border border-input">
+                <SelectValue placeholder="Select an AI agent" />
+              </SelectTrigger>
+
+              <SelectContent className="bg-background border border-input max-h-48 ">
+                {assistants?.length > 0 ? (
+                  assistants.map((assistant) => (
+                    <SelectItem
+                      key={assistant.id}
+                      value={assistant.id}
+                      className="!bg-background/50 hover:!bg-white/10"
+                    >
+                      {assistant.name}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem value="No Agent Available" disabled>
+                    No Agent Available
+                  </SelectItem>
+                )}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-2">
         <Label>Attach an Product</Label>
