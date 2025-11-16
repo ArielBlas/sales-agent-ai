@@ -1,5 +1,6 @@
 import { getAllAssistants } from "@/actions/vapi";
 import React from "react";
+import AiAgentSidebar from "./_components/AiAgentSidebar";
 
 type Props = {};
 
