@@ -1,3 +1,4 @@
+import { createAssistant } from "@/actions/vapi";
 import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -20,7 +21,7 @@ const CreateAssistantModal = ({ isOpen, onClose }: Props) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await CreateAssistantModal(name);
+      const res = await createAssistant(name);
       if (!res.success) {
         throw new Error(res.message);
       }

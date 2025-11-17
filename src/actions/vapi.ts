@@ -1,5 +1,6 @@
 "use server";
 
+import { aiAgentPrompt } from "@/lib/data";
 import { vapiServer } from "@/lib/vapi/vapiServer";
 
 export const getAllAssistants = async () => {
@@ -16,6 +17,38 @@ export const getAllAssistants = async () => {
       success: false,
       status: 500,
       message: "Error fetching assistants",
+    };
+  }
+};
+
+export const createAssistant = async (name: string) => {
+  try {
+    const createAssistant = await vapiServer.assistants.create({
+      name,
+      firstMessage: `Hi there, this is ${name} from customer support. How can I help you today?`,
+      model: {
+        model: "gpt-4o",
+        provider: "openai",
+        messages: [
+          {
+            role: "system",
+            content: aiAgentPrompt,
+          },
+        ],
+        temperature: 0.5,
+      },
+    });
+    return {
+      success: true,
+      status: 201,
+      data: createAssistant,
+    };
+  } catch (error) {
+    console.error("Error creating assistant:", error);
+    return {
+      success: false,
+      status: 500,
+      message: "Failed to create assistant",
     };
   }
 };
