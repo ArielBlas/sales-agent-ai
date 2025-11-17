@@ -1,6 +1,7 @@
 import { createAssistant } from "@/actions/vapi";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { X } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
@@ -55,6 +56,24 @@ const CreateAssistantModal = ({ isOpen, onClose }: Props) => {
             className="bg-neutral-800 border-neutral-700"
             required
           />
+
+          <p className="text.xs text-neutral-400 mt-2">
+            This name will be used to identify your assistant.
+          </p>
+        </div>
+        <div className="flex justify-end gap-3">
+          <Button type="button" onClick={onClose} variant="outline">
+            Cancel
+          </Button>
+          <Button type="submit" disabled={!name.trim() || loading}>
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 animate-spin" /> Creating...
+              </>
+            ) : (
+              "Create Assistant"
+            )}
+          </Button>
         </div>
       </form>
     </div>
