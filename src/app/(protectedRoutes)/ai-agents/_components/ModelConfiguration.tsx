@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { updateAssistant } from "@/actions/vapi";
 
 type Props = {};
 
@@ -17,10 +18,11 @@ const ModelConfiguration = (props: Props) => {
   const handleUpdateAssistant = async () => {
     setLoading(true);
     try {
-      const res = await updateAssistant(assistant?.id, {
+      const res = await updateAssistant(
+        assistant?.id,
         firstMessage,
-        systemPrompt,
-      });
+        systemPrompt
+      );
 
       if (!res.success) {
         throw new Error(res.message);
