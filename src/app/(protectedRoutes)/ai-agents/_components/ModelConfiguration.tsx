@@ -1,10 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { useAiAgentStore } from "@/store/useAiAgentStore";
-import { Loader2 } from "lucide-react";
+import { Info, Loader2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { updateAssistant } from "@/actions/vapi";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { DropDownSelect } from "@stream-io/video-react-sdk";
 
 type Props = {};
 
@@ -69,6 +72,44 @@ const ModelConfiguration = (props: Props) => {
             "Update Assistant"
           )}
         </Button>
+      </div>
+      <p className="text-neutral-400 mb-6">
+        Configure the behavior of the assistant.
+      </p>
+
+      <div className="mb-6">
+        <div className="flex items-center mb-2">
+          <label className="font-medium">First Message</label>
+          <Info className="h-4 w-4 text-neutral-500 ml-2" />
+        </div>
+        <Input
+          value={firstMessage}
+          onChange={(e) => setFirstMessage(e.target.value)}
+          className="bg-primary/10 border-input"
+        />
+      </div>
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center">
+            <label className="font-medium">System Prompt</label>
+            <Info className="h-4 w-4 text-neutral-500 ml-2" />
+          </div>
+        </div>
+        <Textarea
+          value={systemPrompt}
+          onChange={(e) => setSystemPrompt(e.target.value)}
+          className="min-h-[300px] max-h-[500px] bg-primary/10 border-input font-mono text-sm"
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-6">
+        <ConfigField label="Provider">
+          <DropDownSelect value={assistant.model?.provider || ""} />
+        </ConfigField>
+
+        <ConfigField label="Model" showInfo={true}>
+          <DropDownSelect value={assistant.model?.model || ""} />
+        </ConfigField>
       </div>
     </div>
   );
