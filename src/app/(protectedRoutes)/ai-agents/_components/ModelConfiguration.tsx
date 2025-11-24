@@ -8,6 +8,7 @@ import { updateAssistant } from "@/actions/vapi";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { DropDownSelect } from "@stream-io/video-react-sdk";
+import ConfigField from "./ConfigField";
 
 type Props = {};
 
