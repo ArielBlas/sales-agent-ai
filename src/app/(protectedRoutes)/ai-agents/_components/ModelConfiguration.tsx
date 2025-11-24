@@ -7,8 +7,8 @@ import { toast } from "sonner";
 import { updateAssistant } from "@/actions/vapi";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { DropDownSelect } from "@stream-io/video-react-sdk";
 import ConfigField from "./ConfigField";
+import DropdownSelect from "./DropdownSelect";
 
 type Props = {};
 
@@ -105,7 +105,7 @@ const ModelConfiguration = (props: Props) => {
 
       <div className="grid grid-cols-2 gap-6">
         <ConfigField label="Provider">
-          <DropDownSelect value={assistant.model?.provider || ""} />
+          <DropdownSelect value={assistant.model?.provider || ""} />
         </ConfigField>
 
         <ConfigField label="Model" showInfo={true}>
