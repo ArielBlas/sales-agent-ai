@@ -1,3 +1,4 @@
+import { getAttendeeById } from "@/actions/attendance";
 import { redirect } from "next/navigation";
 import React from "react";
 
@@ -14,7 +15,7 @@ const page = async ({ params, searchParams }: Props) => {
     redirect("/404");
   }
 
-  const attende = await getAttendeeById(attendeeId, liveWebinarId);
+  const attendee = await getAttendeeById(attendeeId, liveWebinarId);
 
   return <div>page</div>;
 };
