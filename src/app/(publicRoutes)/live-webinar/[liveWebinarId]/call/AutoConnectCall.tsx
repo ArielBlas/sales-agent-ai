@@ -3,6 +3,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { WebinarWithPresenter } from "@/lib/type";
 import { vapi } from "@/lib/vapi/vapiclient";
 import { toast } from "sonner";
+import { changeCallStatus } from "@/actions/attendance";
+import { CallStatusEnum } from "@prisma/client";
 
 const CallStatus = {
   CONNECTING: "CONNECTING",

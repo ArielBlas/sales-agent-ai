@@ -2,7 +2,7 @@
 
 import { prismaClient } from "@/lib/prisma";
 import { AttendanceData } from "@/lib/type";
-import { AttendedTypeEnum, CtaTypeEnum } from "@prisma/client";
+import { AttendedTypeEnum, CtaTypeEnum, CallStatusEnum } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 export const getWebinarAttendance = async (
@@ -287,6 +287,33 @@ export const getAttendeeById = async (id: string, webinarId: string) => {
       status: 500,
       succcess: false,
       error: "Something went wrong",
+    };
+  }
+};
+
+export const changeCallStatus = async (
+  attendeeId: string,
+  callStatus: CallStatusEnum
+) => {
+  try {
+    const attendance = await prismaClient.attendance.update({
+      where: { attendeeId },
+      data: { callStatus },
+    });
+
+    return {
+      success: true,
+      status: 200,
+      message: "Call status updated successfully",
+      data: attendance,
+    };
+  } catch (error) {
+    console.error("Error updating call status:", error);
+    return {
+      success: false,
+      status: 500,
+      message: "Failed to update call status",
+      error,
     };
   }
 };
