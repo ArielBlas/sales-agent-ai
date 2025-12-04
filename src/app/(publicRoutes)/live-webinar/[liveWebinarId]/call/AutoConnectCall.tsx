@@ -141,7 +141,41 @@ const AutoConnectCall = ({
         });
       }, 1000);
     };
-  }, []);
+
+    const onCallEnd = () => {
+      console.log("Call ended");
+      setCallStatus(CallStatus.FINISHED);
+      cleanup();
+    };
+
+    const onSpeechStart = () => {
+      setAssistantIsSpeaking(true);
+    };
+
+    const onSpeechEnd = () => {
+      setAssistantIsSpeaking(false);
+    };
+
+    const onError = (error: Error) => {
+      console.error("Call error:", error);
+      setCallStatus(CallStatus.FINISHED);
+      cleanup();
+    };
+
+    vapi.on("call-start", onCallStart);
+    vapi.on("call-end", onCallEnd);
+    vapi.on("speech-start", onSpeechStart);
+    vapi.on("speech-end", onSpeechEnd);
+    vapi.on("error", onError);
+
+    return () => {
+      vapi.off("call-start", onCallStart);
+      vapi.off("call-end", onCallEnd);
+      vapi.off("speech-start", onSpeechStart);
+      vapi.off("speech-end", onSpeechEnd);
+      vapi.off("error", onError);
+    };
+  }, [userName, callTimeLimit]);
 
   return (
     <div className="flex flex-col h-[calc(100vh-80px)] bg-background"></div>
