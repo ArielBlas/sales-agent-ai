@@ -5,6 +5,8 @@ import { vapi } from "@/lib/vapi/vapiclient";
 import { toast } from "sonner";
 import { changeCallStatus } from "@/actions/attendance";
 import { CallStatusEnum } from "@prisma/client";
+import { Bot, Mic, MicOff } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const CallStatus = {
   CONNECTING: "CONNECTING",
@@ -178,7 +180,76 @@ const AutoConnectCall = ({
   }, [userName, callTimeLimit]);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-80px)] bg-background"></div>
+    <div className="flex flex-col h-[calc(100vh-80px)] bg-background">
+      <div className="flex-1 flex flex-col md:flex-row p-4 gap-4 relative">
+        <div className="flex-1 bg-card rounded-xl overflow-hidden shadow-log relative">
+          <div className="absolute top-4 left-4 bg-black/40 text-white px-3 py-1 rounded-full text-sm flex items-center gap-2 z-10">
+            <Mic
+              className={cn(
+                "h-4 w-4",
+                assistantIsSpeaking ? "text-accent-primary" : ""
+              )}
+            />
+            <span>{assistantName}</span>
+          </div>
+
+          <div className="h-full flex items-center justify-center">
+            <div className="relative">
+              {assistantIsSpeaking && (
+                <>
+                  <div
+                    className="absolute inset-0 rounded-full border-4 border-accent-primary animate-ping opacity-20"
+                    style={{ margin: "-8px" }}
+                  />
+                  <div
+                    className="absolute inset-0 rounded-full border-2 border-accent-primary animate-ping opacity-10"
+                    style={{ margin: "-16px", animationDelay: "0.5s" }}
+                  />
+                </>
+              )}
+
+              <div
+                className={cn(
+                  "flex justify-center items-center rounded-full overflow-hidden border-4 p-6",
+                  assistantIsSpeaking
+                    ? "border-accent-primary"
+                    : "border-accent-secondary/50"
+                )}
+              >
+                <Bot className="w-[70px] h-[70px]" />
+              </div>
+
+              {assistantIsSpeaking && (
+                <div className="absolute -bottom-2 right-2 bg-accent-primary text-white p-2 rounded-full">
+                  <Mic className="h-5 w-5" />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex-1 bg-card rounded-xl overflow-hidden shadow-lg relative">
+          <div className="absolute top-4 left-4 bg-black/40 text-white px-3 py-1 rounded-full text-sm flex items-center gap-2 z-10">
+            {isMicMuted ? (
+              <>
+                <MicOff className="h-4 w-4 text-destructive" />
+                <span>Muted</span>
+              </>
+            ) : (
+              <>
+                <Mic
+                  className={cn(
+                    "h-4 w-4",
+                    userIsSpeaking ? "text-accent-secondary" : ""
+                  )}
+                />
+                <span>{userName}</span>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
