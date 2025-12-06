@@ -5,8 +5,9 @@ import { vapi } from "@/lib/vapi/vapiclient";
 import { toast } from "sonner";
 import { changeCallStatus } from "@/actions/attendance";
 import { CallStatusEnum } from "@prisma/client";
-import { Bot, Mic, MicOff } from "lucide-react";
+import { Bot, Clock, Mic, MicOff } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const CallStatus = {
   CONNECTING: "CONNECTING",
@@ -37,11 +38,20 @@ const AutoConnectCall = ({
   const [userIsSpeaking, setUserIsSpeaking] = useState<boolean>(false);
   const [isMicMuted, setIsMicMuted] = useState<boolean>(false);
   const [timeRemaining, setTimeRemaining] = useState<number>(callTimeLimit);
+
   const refs = useRef({
     countdownTimer: undefined as NodeJS.Timeout | undefined,
     audioStream: null as MediaStream | null,
     userSpeakingTimeout: undefined as NodeJS.Timeout | undefined,
   });
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
+  };
 
   const cleanup = () => {
     if (refs.current.countdownTimer) {
@@ -246,6 +256,52 @@ const AutoConnectCall = ({
                 <span>{userName}</span>
               </>
             )}
+          </div>
+
+          <div className="absolute top-4 right-4 bg-black/40 text-white px-3 py-1 rounded-full text-sm flex items-center gap-2 z-10">
+            <Clock className="h-4 w-4" />
+            <span>{formatTime(timeRemaining)}s</span>
+          </div>
+
+          <div className="h-full flex items-center justify-center">
+            <div className="relative">
+              {userIsSpeaking && !isMicMuted && (
+                <>
+                  <div
+                    className="absolute inset-0 rounded-full border-4 border-accent-secondary animate-ping opacity-20"
+                    style={{ margin: "-8px" }}
+                  />
+                </>
+              )}
+
+              <div
+                className={cn(
+                  "flex justify-center items-center rounded-full overflow-hidden border-4",
+                  isMicMuted
+                    ? "border-destructive/50"
+                    : userIsSpeaking
+                    ? "border-accent-secondary"
+                    : "border-accent-secondary/50"
+                )}
+              >
+                <Avatar className="w-[100px] h-[100px]">
+                  <AvatarImage src="/user-avatar.png" alt={userName} />
+                  <AvatarFallback>{userName.split("")?.[0]}</AvatarFallback>
+                </Avatar>
+              </div>
+
+              {isMicMuted && (
+                <div className="absolute -bottom-2 -right-2 bg-destructive text-white p-2 rounded-full">
+                  <MicOff className="h-5 w-5" />
+                </div>
+              )}
+
+              {userIsSpeaking && !isMicMuted && (
+                <div className="absolute -bottom-2 right-2 bg-accent-secondary text-white p-2 rounded-full">
+                  <Mic className="h-5 w-5" />
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
