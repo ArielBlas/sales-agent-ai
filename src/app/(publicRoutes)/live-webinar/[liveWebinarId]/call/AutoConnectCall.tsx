@@ -5,9 +5,11 @@ import { vapi } from "@/lib/vapi/vapiclient";
 import { toast } from "sonner";
 import { changeCallStatus } from "@/actions/attendance";
 import { CallStatusEnum } from "@prisma/client";
-import { Bot, Clock, Mic, MicOff } from "lucide-react";
+import { Bot, Clock, Loader2, Mic, MicOff, PhoneOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { createCheckoutLink } from "@/actions/stripe";
 
 const CallStatus = {
   CONNECTING: "CONNECTING",
@@ -131,6 +133,36 @@ const AutoConnectCall = ({
       toast.success("Call ended successfully");
     } catch (error) {
       console.error("Error stopping call:", error);
+    }
+  };
+
+  const toggleMicMute = () => {
+    if (refs.current.audioStream) {
+      refs.current.audioStream.getAudioTracks().forEach((track) => {
+        track.enabled = isMicMuted;
+      });
+    }
+    setIsMicMuted(!isMicMuted);
+  };
+
+  const checkoutLink = async () => {
+    try {
+      if (!webinar?.priceId || !webinar?.presenter?.stripeConnectId) {
+        return toast.error("No priceId or stripeConnectId found");
+      }
+      const session = await createCheckoutLink(
+        webinar.priceId,
+        webinar.presenter.stripeConnectId,
+        userId,
+        webinar.id
+      );
+      if (!session.sessionUrl) {
+        throw new Error("Session ID not found in response");
+      }
+      window.open(session.sessionUrl, "_blank");
+    } catch (error) {
+      console.error("Error creating checkout link:", error);
+      toast.error("Failed to create checkout link");
     }
   };
 
@@ -303,6 +335,76 @@ const AutoConnectCall = ({
               )}
             </div>
           </div>
+        </div>
+
+        {callStatus === CallStatus.CONNECTING && (
+          <div className="absolute inset-0 bg-background/80 flex items-center justify-center flex-col gap-4 z-20">
+            <Loader2 className="h-10 w-10 animate-spin text-accent-primary" />
+            <h3 className="text-xl font-medium">Connecting...</h3>
+          </div>
+        )}
+
+        {callStatus === CallStatus.FINISHED && (
+          <div className="absolute inset-0 bg-background/90 flex items-center justify-center flex-col gap-4 z-20">
+            <h3 className="text-2xl font-medium">Call Ended</h3>
+            <p className="text-muted-foreground">Time limit reached</p>
+          </div>
+        )}
+      </div>
+
+      <div className="bg-card border-t border-border p-4">
+        <div className="max-w-3xl mx-auto flex items-center justify-between flex-wrap gap-3">
+          <div className="flex items-center gap-2">
+            {callStatus === CallStatus.ACTIVE && (
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-muted-foreground" />
+                <span
+                  className={cn(
+                    "text-sm font-medium",
+                    timeRemaining < 30
+                      ? "text-destructive animate-pulse"
+                      : timeRemaining < 60
+                      ? "text-amber-500"
+                      : "text-muted-foreground"
+                  )}
+                >
+                  {formatTime(timeRemaining)} remaining
+                </span>
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center gap-4">
+            <button
+              onClick={toggleMicMute}
+              className={cn(
+                "p-3 rounded-full transition-all",
+                isMicMuted
+                  ? "bg-destructive text-primary"
+                  : "bg-secondary hover:bg-secondary/80 text-foreground"
+              )}
+              disabled={callStatus !== CallStatus.ACTIVE}
+            >
+              {isMicMuted ? (
+                <MicOff className="h-6 w-6" />
+              ) : (
+                <Mic className="h-6 w-6" />
+              )}
+            </button>
+
+            <button
+              onClick={stopCall}
+              className="p-3 rounded-full bg-destructive text-primary hover:bg-destructive/90 transition-all"
+              aria-label="End Call"
+              disabled={callStatus !== CallStatus.ACTIVE}
+            >
+              <PhoneOff className="h-6 w-6" />
+            </button>
+          </div>
+
+          <Button onClick={checkoutLink} variant="outline">
+            Buy Now
+          </Button>
         </div>
       </div>
     </div>
