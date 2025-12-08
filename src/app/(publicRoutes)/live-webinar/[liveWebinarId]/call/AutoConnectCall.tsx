@@ -121,21 +121,6 @@ const AutoConnectCall = ({
     }
   };
 
-  const stopCall = async () => {
-    try {
-      vapi.stop();
-      setCallStatus(CallStatus.FINISHED);
-      cleanup();
-      const res = await changeCallStatus(userId, CallStatusEnum.COMPLETED);
-      if (!res.success) {
-        throw new Error("Failed to update call status");
-      }
-      toast.success("Call ended successfully");
-    } catch (error) {
-      console.error("Error stopping call:", error);
-    }
-  };
-
   const toggleMicMute = () => {
     if (refs.current.audioStream) {
       refs.current.audioStream.getAudioTracks().forEach((track) => {
@@ -165,6 +150,46 @@ const AutoConnectCall = ({
       toast.error("Failed to create checkout link");
     }
   };
+
+  const startCall = async () => {
+    try {
+      setCallStatus(CallStatus.CONNECTING);
+      await vapi.start(assistantId);
+      const res = await changeCallStatus(userId, CallStatusEnum.InProgress);
+      if (!res.success) {
+        throw new Error("Failed to update call status");
+      }
+      toast.success("Call started successfully");
+    } catch (error) {
+      console.error("Error starting call:", error);
+      toast.error("Failed to start call. Please try again.");
+      setCallStatus(CallStatus.FINISHED);
+    }
+  };
+
+  const stopCall = async () => {
+    try {
+      vapi.stop();
+      setCallStatus(CallStatus.FINISHED);
+      cleanup();
+      const res = await changeCallStatus(userId, CallStatusEnum.COMPLETED);
+      if (!res.success) {
+        throw new Error("Failed to update call status");
+      }
+      toast.success("Call ended successfully");
+    } catch (error) {
+      console.error("Error stopping call:", error);
+      toast.error("Failed to end call. Please try again.");
+    }
+  };
+
+  useEffect(() => {
+    startCall();
+
+    return () => {
+      stopCall();
+    };
+  }, []);
 
   useEffect(() => {
     const onCallStart = async () => {
@@ -405,6 +430,14 @@ const AutoConnectCall = ({
           <Button onClick={checkoutLink} variant="outline">
             Buy Now
           </Button>
+
+          <div className="hidden md:block">
+            {callStatus === CallStatus.ACTIVE && timeRemaining < 30 && (
+              <span className="text-destructive font-medium">
+                Call ending soon
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </div>
